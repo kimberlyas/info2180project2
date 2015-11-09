@@ -5,6 +5,7 @@ var n = 15; //Number of tiles
 var win = false;
 var counter = 0; //Keeps track of number of moves made
 var puzzleHeight = 400; 
+var emptySquare; 
 
 var j = 0; //resizing of divs
 var k = 0; //background cropping
@@ -25,6 +26,8 @@ window.onload = function()
 	// Shuffle pieces
 	document.getElementById("shufflebutton").onclick = shuffle; 
 	
+	emptySquare = getSpace();
+	
 	// Play game
 	for (var i=0; i< pieces.length; i++)
 	{
@@ -32,7 +35,7 @@ window.onload = function()
 		//pieces[i].onmouseover = movablePiece; 
 		//pieces[i].onmouseout = resetPiece;
 		
-		console.log("Call was made to movePiece with "+pieces[i].offsetTop+", "+pieces[i].offsetLeft);
+		//console.log("Call was made to movePiece with "+pieces[i].offsetTop+", "+pieces[i].offsetLeft);
     	pieces[i].onclick = movePiece;
 	}
 	
@@ -60,7 +63,7 @@ window.onload = function()
 
 function position(pieces)
 {
-	"use strict";
+	//"use strict";
 	
 	// The puzzle element dimensions
 	//var puzzle = document.getElementById("puzzlearea");
@@ -113,6 +116,9 @@ function resetPiece()
 
 function shuffle()
 {"use strict";
+	// Get location of empty slot
+	emptySquare = getSpace();
+	console.log("Empty Square coordinates: "+emptySquare);
 	//Rearrange the puzzle pieces
 	 var randomNum = Math.floor(Math.random() * n);
 	 console.log(randomNum);
@@ -121,25 +127,30 @@ function shuffle()
 function movePiece() // Move puzzle piece to empty slot
 {		
 	//"use strict";
-	//var temp = [];
+	var temp = [];
+	
+	// Get location of empty slot
+	//var emptySquare = getSpace();
+	//console.log("Empty Square coordinates: "+emptySquare);
 	
 	if (moveable(this))
 	{
-		// Get location of empty slot
-		var emptySquare = getSpace();
-		console.log("Empty Square coordinates: "+emptySquare);
-		
+		console.log(emptySquare);
 		// Get location of piece to be moved
 		//var pieceLocation = [parseInt(this.style.top),parseInt(this.style.left)];
 		// Switch locations
 		//temp = pieceLocation;
+		temp = [parseInt(this.style.top),parseInt(this.style.left)];
 		//pieceLocation = emptySquare;
 		//emptySquare = temp;
 		
 		// Execute move of given puzzle piece
 		this.style.top = emptySquare[0] + "px";
-	    this.style.left = emptySquare[1] + "px";
+	    	this.style.left = emptySquare[1] + "px";
 		
+		//Change coordinates of empty square
+		emptySquare[0] = temp[0];
+		emptySquare[1] = temp[1];
 		// Count move
 		counter++;
 		console.log("Count of Moves: "+counter);
@@ -207,9 +218,16 @@ function getSpace() // Keep track of where the empty square is
 		else if (row2 !== 600) {emptyX = 100;}
 			else if (row3 !== 600) {emptyX = 200;}
 				else if (row4 !== 600) {emptyX = 300;}
-					else if(row1===600 && row2===600 && row3===600 && row4===600){
-						console.log("Hardcode --> Row 1?!");
-						emptyX = (row1-300);
+					else if(row1===600 && row2===600 && row3===600 && row4===600)
+						{
+							console.log("Hardcode --> Row 1?!");
+							/*switch(emptyX)
+							{
+								case 0:   emptyX = (row1-300); break;
+								case 100: emptyX = (row1-200); break;
+								case 200: emptyX = (row1-100); break;
+								case 300: emptyX = (row1-0); break;
+							}*/
 					}
 					
 	if (column1 !== 600) {emptyY = 0;}
@@ -218,7 +236,13 @@ function getSpace() // Keep track of where the empty square is
 	 			else if (column4 !== 600) {emptyY = 300;}
 					else if(column1===600 && column2===600 && column3===600 && column4===600){
 						console.log("Hardcode --> Column 1?!");
-						emptyY = (column1-300);
+						/*switch(emptyY)
+							{
+								case 0:   emptyY = (column1-300); break;
+								case 100: emptyY = (column1-200); break;
+								case 200: emptyY = (column1-100); break;
+								case 300: emptyY = (column1-0); break;
+							}*/
 					}
 					
 	//console.log(emptyX,emptyY);
@@ -230,7 +254,7 @@ function moveable(square) // Determine whether a given square can move or not
 	//"use strict";	
 		
 	// Get location of empty square
-	var emptySquare = getSpace();
+	//var emptySquare = getSpace();
 	console.log("Square Top(x): "+square.offsetTop+" Square Left(y):"+square.offsetLeft);
 	console.log("(Comparison) SpaceTop(x): "+emptySquare[0]+" SpaceLeft(y): "+emptySquare[1]);
 	
@@ -278,4 +302,3 @@ function movablePiece() //Highlight piece if moveable
 		}
 	
 } 
-
