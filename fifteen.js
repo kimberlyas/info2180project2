@@ -6,6 +6,7 @@ var win = false;
 var counter = 0; //Keeps track of number of moves made
 var puzzleHeight = 400; 
 var emptySquare; 
+var clicked = false;
 
 var j = 0; //resizing of divs
 var k = 0; //background cropping
@@ -22,21 +23,23 @@ window.onload = function()
 	
 	// Arrange puzzle on screen
 	position(pieces);
-	
+
 	// Shuffle pieces
-	document.getElementById("shufflebutton").onclick = shuffle; 
-	
+	var shuffleButton =	document.getElementById("shufflebutton")
+	shuffleButton.onclick = shuffle; 
+
+	// Locate the empty space
 	emptySquare = getSpace();
+	
 	
 	// Play game
 	for (var i=0; i< pieces.length; i++)
 	{
 		pieces[i].className = 'puzzlepiece'; //re-sizes the div
-		//pieces[i].onmouseover = movablePiece; 
+		pieces[i].onclick = movePiece;
+		//pieces[i].onmousedown = movablePiece; 
 		//pieces[i].onmouseout = resetPiece;
-		
-		//console.log("Call was made to movePiece with "+pieces[i].offsetTop+", "+pieces[i].offsetLeft);
-    	pieces[i].onclick = movePiece;
+
 	}
 	
 	// New Play Game
@@ -68,10 +71,7 @@ function position(pieces)
 	// The puzzle element dimensions
 	//var puzzle = document.getElementById("puzzlearea");
 	//var puzzleHeight = puzzle.offsetHeight;
-	
-	// Get puzzle piece elements
-	//var pieces = document.getElementById("puzzlearea").getElementsByTagName('div');
-		
+			
 	
 	// Tile positioning
 	
@@ -109,36 +109,62 @@ function position(pieces)
 	}
 }
 	
-function resetPiece()
+function resetPiece() //Once the cursor is no longer hovering over the square, its appearance should revert to its original state
 {
 		this.className = 'puzzlepiece'; //re-sizes the div
-} //Once the cursor is no longer hovering over the square, its appearance should revert to its original state
+} 
 
-function shuffle()
+
+function shuffle() //Rearrange the puzzle pieces
 {	//"use strict";
 	
+	var pieces = document.getElementById("puzzlearea").getElementsByTagName('div'); //Accessing the div of 15 divs
 	var listAdjPos = [];
 	var c = 0;
 	
 	do{
-		for(key in puzzleDic){
-			if(movable(puzzleDic[key])){
-				listAdjPos.push(puzzleDic[key]);
+		for(var s = 0; s<pieces.length; s++){
+			if(moveable(pieces[s])){
+				console.log(pieces[s]);
+				listAdjPos.push(pieces[s]);
+			}
+			else
+			{
+				console.log("Not moveable");
 			}
 		}// Finding the list of positions adjacent to the empty space from the values in the dictionary
 		
+		console.log("In shuffle. Array: "+ listAdjPos);
+		
 		if(c!==0){
-			//priorPos = getSpace;// Delimiter - Get current empty position prior to swap
-			var remove = listAdjPos.indexOf(priorPos);// Finding the index of the prior position
-			listAdjPos.splice(remove,1);// Removing this from the list of adjacent positions
+			//var remove = listAdjPos.indexOf(spacePos);// Finding the index of the prior position
+			console.log("Inside c!==0");
+			
+			for(var i=0; i<listAdjPos.length; i++){
+				if(((parseInt(listAdjPos[i].style.top)) === (emptySquare[0])) && (parseInt((listAdjPos[i].style.left)) === (emptySquare[1]))){
+					listAdjPos.splice(i,1);// Removing this from the list of adjacent positions
+					break;
+				}
+			}
+			
 		}// Ensures that the swap isn't reversed at any point in the shuffling
 			
 		var choice = Math.floor(Math.random() * (listAdjPos.length-1));// Selection
-		movePiece(listAdjPos[choice]);// Position swap with empty space 
+		console.log("Choice:"+choice);
+		//movePiece;// Position swap with empty space 
+		console.log(emptySquare);
+		// Switch locations
+		prevPos = [parseInt(listAdjPos[choice].style.top),parseInt(listAdjPos[choice].style.left)];		
+		// Execute move of given puzzle piece
+		listAdjPos[choice].style.top = emptySquare[0] + "px";
+	    listAdjPos[choice].style.left = emptySquare[1] + "px";
+		//Change coordinates of empty square
+		emptySquare[0] = prevPos[0];
+		emptySquare[1] = prevPos[1];
 		
 		c++;	
-	}while(c<n && spacePos!==[300,300])
-}//Shuffles puzzle pieces when the button is clicked
+	}while(c<n && emptySquare!==[300,300])
+}//Thus function shuffles puzzle pieces when the button is clicked
 
 function movePiece() // Move puzzle piece to empty slot
 {		
