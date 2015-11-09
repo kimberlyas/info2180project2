@@ -1,12 +1,15 @@
 //Fifteen Puzzle Javascript Document
 
+/*ID: 620076399 Extra features implemented: Multiple backgrounds*/
+
 //Variables 
 var n = 15; //Number of tiles
 var win = false;
 var counter = 0; //Keeps track of number of moves made
 var puzzleHeight = 400; 
 var emptySquare; 
-var clicked = false;
+var imglink = '';
+//var clicked = false;
 
 var j = 0; //resizing of divs
 var k = 0; //background cropping
@@ -20,9 +23,37 @@ window.onload = function()
 	
 	// Get puzzle piece elements
 	var pieces = document.getElementById("puzzlearea").getElementsByTagName('div');
+
+	//UI
+	var controls = document.getElementById("controls");
+	var background = document.createElement("SELECT");
+	background.id = "background";
+	controls.appendChild(document.createTextNode("Select a different background:"));
+	//Create array of options to be added
+	var backgroundOptions = ["Samus","Zero Suit Samus","Sheik","Zelda"];
+	//Create and append the options
+	for (var i = 0; i < backgroundOptions.length; i++) {
+    	var option = document.createElement("option");
+    	option.value = i;
+    	option.text = backgroundOptions[i];
+    	background.appendChild(option);
+	}
+	controls.appendChild(background);
+
+	// Random Background
+	var link = '';
+	switch( Math.floor(Math.random() * (backgroundOptions.length)) )
+		{
+			case 0 : link = 'url(https://googledrive.com/host/0B3zmJAfIk6jvd0dCcmlybWVaUEE)'; break;
+			case 1 : link = 'url(https://googledrive.com/host/0B3zmJAfIk6jvb0ZNZkRHaU1CWjg)'; break;
+			case 2 : link = 'url(https://googledrive.com/host/0B3zmJAfIk6jvT2NwMHpwNGpCd1E)'; break;
+			case 3 : link = 'url(https://googledrive.com/host/0B3zmJAfIk6jvWnFvYVd0dGU1Sjg)'; break;
+		}
+	
 	
 	// Arrange puzzle on screen
 	position(pieces);
+
 
 	// Shuffle pieces
 	var shuffleButton =	document.getElementById("shufflebutton")
@@ -35,42 +66,43 @@ window.onload = function()
 	// Play game
 	for (var i=0; i< pieces.length; i++)
 	{
+		pieces[i].style.backgroundImage = link;
 		pieces[i].className = 'puzzlepiece'; //re-sizes the div
-		pieces[i].onclick = movePiece;
-		//pieces[i].onmousedown = movablePiece; 
+		pieces[i].setAttribute("clicked",false);
+		//pieces[i].onmouseover = movablePiece; 
 		//pieces[i].onmouseout = resetPiece;
-
+		pieces[i].onclick = movePiece;
+			
 	}
+
+	//Change background
+	background.onchange = changeBackground;
 	
-	// New Play Game
-	/*while(!win){
-		for (var i=0; i< pieces.length; i++)
-		{
-			pieces[i].className = 'puzzlepiece'; //re-sizes the div
-			//pieces[i].onmouseover = movablePiece; 
-			//pieces[i].onmouseout = resetPiece;
-			
-			console.log("Call was made to movePiece with "+movePiece);
-    		pieces[i].onclick = movePiece;
-			
-			if(hasWon(pieces[i]){
-				win = true;	
-			}
-		}
-	}**/
 };
 
-/*function hasWon(){
-	
-}*/
+function changeBackground() //Provide several background images (at least 4) to choose from.
+{
+
+	//Get choice
+	switch(document.getElementById("background").options[document.getElementById("background").selectedIndex].value)
+	{
+			case 0 : imglink = 'url(https://googledrive.com/host/0B3zmJAfIk6jvd0dCcmlybWVaUEE)'; break;
+			case 1 : imglink = 'url(https://c83317c3d5bfbc5ada632d48ba102de5b6690188.googledrive.com/host/0B3zmJAfIk6jvb0ZNZkRHaU1CWjg)'; break;
+			case 2 : imglink = 'url(https://googledrive.com/host/0B3zmJAfIk6jvT2NwMHpwNGpCd1E)'; break;
+			case 3 : imglink = 'url(https://googledrive.com/host/0B3zmJAfIk6jvWnFvYVd0dGU1Sjg)'; break;
+	}
+
+	var puzzlepieces = document.getElementById("puzzlearea").getElementsByTagName('div');	
+
+	for (var b = 0; b < puzzlepieces.length; b++)
+	{
+		puzzlepieces[b].style.backgroundImage = imglink;
+	}
+}
 
 function position(pieces)
 {
 	//"use strict";
-	
-	// The puzzle element dimensions
-	//var puzzle = document.getElementById("puzzlearea");
-	//var puzzleHeight = puzzle.offsetHeight;
 			
 	
 	// Tile positioning
@@ -111,7 +143,8 @@ function position(pieces)
 	
 function resetPiece() //Once the cursor is no longer hovering over the square, its appearance should revert to its original state
 {
-		this.className = 'puzzlepiece'; //re-sizes the div
+		
+		this.className = 'puzzlepiece';//re-sizes the div
 } 
 
 
@@ -134,11 +167,9 @@ function shuffle() //Rearrange the puzzle pieces
 			}
 		}// Finding the list of positions adjacent to the empty space from the values in the dictionary
 		
-		console.log("In shuffle. Array: "+ listAdjPos);
 		
 		if(c!==0){
-			//var remove = listAdjPos.indexOf(spacePos);// Finding the index of the prior position
-			console.log("Inside c!==0");
+		
 			
 			for(var i=0; i<listAdjPos.length; i++){
 				if(((parseInt(listAdjPos[i].style.top)) === (emptySquare[0])) && (parseInt((listAdjPos[i].style.left)) === (emptySquare[1]))){
@@ -158,6 +189,11 @@ function shuffle() //Rearrange the puzzle pieces
 		// Execute move of given puzzle piece
 		listAdjPos[choice].style.top = emptySquare[0] + "px";
 	    listAdjPos[choice].style.left = emptySquare[1] + "px";
+	    // Animate move
+	    var movex = emptySquare[0] + "px";
+	    var movey = emptySquare[1] + "px";
+	    //listAdjPos[choice].style.transform = "translate3d(movex,movey, 0px)";
+	    
 		//Change coordinates of empty square
 		emptySquare[0] = prevPos[0];
 		emptySquare[1] = prevPos[1];
@@ -169,12 +205,12 @@ function shuffle() //Rearrange the puzzle pieces
 function movePiece() // Move puzzle piece to empty slot
 {		
 	//"use strict";
+	this.setAttribute("clicked",true);
 	var temp = [];
 	
 	// Get location of empty slot
 	//var emptySquare = getSpace();
 	//console.log("Empty Square coordinates: "+emptySquare);
-	
 	if (moveable(this))
 	{
 		console.log(emptySquare);
@@ -188,7 +224,7 @@ function movePiece() // Move puzzle piece to empty slot
 		
 		// Execute move of given puzzle piece
 		this.style.top = emptySquare[0] + "px";
-	    	this.style.left = emptySquare[1] + "px";
+	    this.style.left = emptySquare[1] + "px";
 		
 		//Change coordinates of empty square
 		emptySquare[0] = temp[0];
@@ -225,34 +261,28 @@ function getSpace() // Keep track of where the empty square is
 	var row3 = 0;
 	var row4 = 0;
 	
-	// Calculate the points of the empty square
+	// Calculate the points of the empty square using a grid inversion
 	for (var i=0; i< pieces.length; i++)
 	{
 		//Rows (x)
 		switch (parseInt(pieces[i].style.top))
 		{
-			case 0:   row1 += parseInt(pieces[i].style.left); console.log(" Added to Row 1: "+row1);  break;
-			case 100: row2 += parseInt(pieces[i].style.left);console.log("Added to Row 2: "+row2); break;
-			case 200: row3 += parseInt(pieces[i].style.left); console.log("Added to Row 3: "+row3);break;
-			case 300: row4 += parseInt(pieces[i].style.left); console.log("Added to Row 4: "+row4);break;
-			default: console("Damn Stupid 1 thing! #kmft - In Top Switch");break;
+			case 0:   row1 += parseInt(pieces[i].style.left); break;
+			case 100: row2 += parseInt(pieces[i].style.left); break;
+			case 200: row3 += parseInt(pieces[i].style.left); break;
+			case 300: row4 += parseInt(pieces[i].style.left); break;
 		}
 		
-		console.log("Row 1: "+row1);console.log("Row 2: "+row2);
-		console.log("Row 3: "+row3);console.log("Row 4: "+row4);
 		
 		// Columns (y)
 		switch (parseInt(pieces[i].style.left))
 		{
-			case 0:   column1 += parseInt(pieces[i].style.top); console.log("Added to Column 1: "+column1);break;
-			case 100: column2 += parseInt(pieces[i].style.top);console.log("Added to Column 2: "+column2); break;
-			case 200: column3 += parseInt(pieces[i].style.top); console.log("Added to Column 3: "+column3);break;
-			case 300: column4 += parseInt(pieces[i].style.top);console.log("Added to Column 4: "+column4); break;
-			default: console("Damn Stupid2 thing! #kmft - In Left Switch");break;
+			case 0:   column1 += parseInt(pieces[i].style.top); break;
+			case 100: column2 += parseInt(pieces[i].style.top); break;
+			case 200: column3 += parseInt(pieces[i].style.top); break;
+			case 300: column4 += parseInt(pieces[i].style.top); break;
 		}
 		
-		console.log("Column 1: "+column1);console.log("Column 2: "+column2);
-		console.log("Column 3: "+column3);console.log("Column 4: "+column4);
 		
 	}
 	
@@ -260,32 +290,13 @@ function getSpace() // Keep track of where the empty square is
 		else if (row2 !== 600) {emptyX = 100;}
 			else if (row3 !== 600) {emptyX = 200;}
 				else if (row4 !== 600) {emptyX = 300;}
-					else if(row1===600 && row2===600 && row3===600 && row4===600)
-						{
-							console.log("Hardcode --> Row 1?!");
-							/*switch(emptyX)
-							{
-								case 0:   emptyX = (row1-300); break;
-								case 100: emptyX = (row1-200); break;
-								case 200: emptyX = (row1-100); break;
-								case 300: emptyX = (row1-0); break;
-							}*/
-					}
+					
 					
 	if (column1 !== 600) {emptyY = 0;}
 		else if (column2 !== 600) {emptyY = 100;} 
 			else if (column3 !== 600) {emptyY = 200;}
 	 			else if (column4 !== 600) {emptyY = 300;}
-					else if(column1===600 && column2===600 && column3===600 && column4===600){
-						console.log("Hardcode --> Column 1?!");
-						/*switch(emptyY)
-							{
-								case 0:   emptyY = (column1-300); break;
-								case 100: emptyY = (column1-200); break;
-								case 200: emptyY = (column1-100); break;
-								case 300: emptyY = (column1-0); break;
-							}*/
-					}
+				
 					
 	//console.log(emptyX,emptyY);
 	return [emptyX,emptyY]; 
@@ -298,7 +309,7 @@ function moveable(square) // Determine whether a given square can move or not
 	// Get location of empty square
 	//var emptySquare = getSpace();
 	console.log("Square Top(x): "+square.offsetTop+" Square Left(y):"+square.offsetLeft);
-	console.log("(Comparison) SpaceTop(x): "+emptySquare[0]+" SpaceLeft(y): "+emptySquare[1]);
+	console.log("SpaceTop(x): "+emptySquare[0]+" SpaceLeft(y): "+emptySquare[1]);
 	
 	// Determine whether it neighbors the empty square
 	if ( parseInt(square.style.top) === emptySquare[0] )
@@ -306,7 +317,7 @@ function moveable(square) // Determine whether a given square can move or not
 		if ( parseInt(square.style.left) + 100 === emptySquare[1] || 
 			 parseInt(square.style.left) - 100 === emptySquare[1] )
 		{
-			console.log("In moveable. Top - Same & Left - Changes. Can be moved");
+			//console.log("In moveable. Top - Same & Left - Changes. Can be moved");
 			return true;
 		}
 		else{
@@ -318,7 +329,7 @@ function moveable(square) // Determine whether a given square can move or not
 			if ( parseInt(square.style.top) + 100 === emptySquare[0] || 
 			     parseInt(square.style.top) - 100 === emptySquare[0] )
 			{
-				console.log("In moveable. Top - Changes & Left - Same. Can be moved");
+				//console.log("In moveable. Top - Changes & Left - Same. Can be moved");
 				return true;
 			}
 			else{
@@ -328,8 +339,8 @@ function moveable(square) // Determine whether a given square can move or not
 	else
 	{
 		console.log("In moveable - Not adjacent possibly");
-		console.log("Square Top(x): "+square.offsetTop+" Square Left(y):"+square.offsetLeft);
-		console.log("(Comparison) SpaceTop(x): "+emptySquare[0]+" SpaceLeft(y): "+emptySquare[1]);
+		//console.log("Square Top(x): "+square.offsetTop+" Square Left(y):"+square.offsetLeft);
+		//console.log("(Comparison) SpaceTop(x): "+emptySquare[0]+" SpaceLeft(y): "+emptySquare[1]);
 		return false;
 	}
 		
@@ -338,9 +349,12 @@ function moveable(square) // Determine whether a given square can move or not
 function movablePiece() //Highlight piece if moveable
 {
 	//"use strict";
+	if (this.getAttribute("clicked") === false){
 		if (moveable(this))
 		{
+			//this.className = 'movablepiece';
 			this.className = 'movablepiece';
 		}
+	}
 	
-} 
+}
