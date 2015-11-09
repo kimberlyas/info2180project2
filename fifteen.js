@@ -115,14 +115,30 @@ function resetPiece()
 } //Once the cursor is no longer hovering over the square, its appearance should revert to its original state
 
 function shuffle()
-{"use strict";
-	// Get location of empty slot
-	emptySquare = getSpace();
-	console.log("Empty Square coordinates: "+emptySquare);
-	//Rearrange the puzzle pieces
-	 var randomNum = Math.floor(Math.random() * n);
-	 console.log(randomNum);
-}
+{	//"use strict";
+	
+	var listAdjPos = [];
+	var c = 0;
+	
+	do{
+		for(key in puzzleDic){
+			if(movable(puzzleDic[key])){
+				listAdjPos.push(puzzleDic[key]);
+			}
+		}// Finding the list of positions adjacent to the empty space from the values in the dictionary
+		
+		if(c!==0){
+			//priorPos = getSpace;// Delimiter - Get current empty position prior to swap
+			var remove = listAdjPos.indexOf(priorPos);// Finding the index of the prior position
+			listAdjPos.splice(remove,1);// Removing this from the list of adjacent positions
+		}// Ensures that the swap isn't reversed at any point in the shuffling
+			
+		var choice = Math.floor(Math.random() * (listAdjPos.length-1));// Selection
+		movePiece(listAdjPos[choice]);// Position swap with empty space 
+		
+		c++;	
+	}while(c<n && spacePos!==[300,300])
+}//Shuffles puzzle pieces when the button is clicked
 
 function movePiece() // Move puzzle piece to empty slot
 {		
