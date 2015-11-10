@@ -69,8 +69,8 @@ window.onload = function()
 		pieces[i].style.backgroundImage = link;
 		pieces[i].className = 'puzzlepiece'; //re-sizes the div
 		pieces[i].setAttribute("clicked",false);
-		//pieces[i].onmouseover = movablePiece; 
-		//pieces[i].onmouseout = resetPiece;
+		pieces[i].onmouseover = movablePiece; 
+		pieces[i].onmouseout = resetPiece;
 		pieces[i].onclick = movePiece;
 			
 	}
