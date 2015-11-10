@@ -26,13 +26,16 @@ window.onload = function()
 
 	//UI
 	var controls = document.getElementById("controls");
+
+	//Select background
 	var background = document.createElement("SELECT");
 	background.id = "background";
 	controls.appendChild(document.createTextNode("Select a different background:"));
 	//Create array of options to be added
 	var backgroundOptions = ["Samus","Zero Suit Samus","Sheik","Zelda"];
 	//Create and append the options
-	for (var i = 0; i < backgroundOptions.length; i++) {
+	for (var i = 0; i < backgroundOptions.length; i++) 
+	{
     	var option = document.createElement("option");
     	option.value = i;
     	option.text = backgroundOptions[i];
@@ -54,7 +57,6 @@ window.onload = function()
 	// Arrange puzzle on screen
 	position(pieces);
 
-
 	// Shuffle pieces
 	var shuffleButton =	document.getElementById("shufflebutton")
 	shuffleButton.onclick = shuffle; 
@@ -68,9 +70,7 @@ window.onload = function()
 	{
 		pieces[i].style.backgroundImage = link;
 		pieces[i].className = 'puzzlepiece'; //re-sizes the div
-		pieces[i].setAttribute("clicked",false);
-		pieces[i].onmouseover = movablePiece; 
-		pieces[i].onmouseout = resetPiece;
+		pieces[i].onmouseover = function(){if(moveable(this)){this.classList.add("movablepiece");}else{this.classList.remove("movablepiece");}}//Highlight piece if moveable
 		pieces[i].onclick = movePiece;
 			
 	}
@@ -141,12 +141,6 @@ function position(pieces)
 	}
 }
 	
-function resetPiece() //Once the cursor is no longer hovering over the square, its appearance should revert to its original state
-{
-		
-		this.className = 'puzzlepiece';//re-sizes the div
-} 
-
 
 function shuffle() //Rearrange the puzzle pieces
 {	//"use strict";
@@ -344,17 +338,4 @@ function moveable(square) // Determine whether a given square can move or not
 		return false;
 	}
 		
-}
-
-function movablePiece() //Highlight piece if moveable
-{
-	//"use strict";
-	if (this.getAttribute("clicked") === false){
-		if (moveable(this))
-		{
-			//this.className = 'movablepiece';
-			this.className = 'movablepiece';
-		}
-	}
-	
 }
